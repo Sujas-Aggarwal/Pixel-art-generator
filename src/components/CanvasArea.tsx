@@ -1,13 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useToolStore } from "../context/ToolStore";
-import { Tool } from "../types/Tools";
-
 function CanvasArea() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { setPixels, pixels, pixelCount, color, gridRef, selectedTool } =
-    useToolStore();
+  const {
+    pixelCount,
+    paintCanvas,
+    gridRef,
+    canvasRef,
+  } = useToolStore();
   useEffect(() => {
+    const canvas = canvasRef.current;
     const gridDiv = gridRef.current;
+    if (!canvas || !gridDiv) return;
+    //setting canvas width and height
+    canvas.width = gridDiv.scrollWidth;
+    canvas.height = gridDiv.scrollHeight;
     //disabling right click
     gridDiv?.addEventListener("contextmenu", (e) => {
       e.preventDefault();
@@ -20,33 +26,33 @@ function CanvasArea() {
       const gridWidth = gridDiv.scrollWidth;
       const gridHeight = gridDiv.scrollHeight;
       const fragment = document.createDocumentFragment();
-      function paintGrid(targetSpan: HTMLSpanElement) {
-        if (selectedTool == Tool.Eraser) {
-          targetSpan.style.background = "none";
-          targetSpan.style.outline = `#f6eee3 1px solid`;
-          const row = parseInt(targetSpan.dataset.row!);
-          const col = parseInt(targetSpan.dataset.col!);
-          if (row < 1 || col < 1) return;
-          if (row > pixelCount || col > pixelCount) return;
-          if (isNaN(row) || isNaN(col)) return;
-          const newPixels = [...pixels];
-          newPixels[row - 1][col - 1] = "#f6eee3";
-          setPixels(newPixels);
-          return;
-        } else if (selectedTool == Tool.Pencil) {
-          if (targetSpan.style.background === color) return;
-          targetSpan.style.background = color;
-          targetSpan.style.outline = `${color} 1px solid`;
-          const row = parseInt(targetSpan.dataset.row!);
-          const col = parseInt(targetSpan.dataset.col!);
-          if (row < 1 || col < 1) return;
-          if (row > pixelCount || col > pixelCount) return;
-          if (isNaN(row) || isNaN(col)) return;
-          const newPixels = [...pixels];
-          newPixels[row - 1][col - 1] = color;
-          setPixels(newPixels);
-        }
-      }
+    //   function paintGrid(targetSpan: HTMLSpanElement) {
+    //     if (selectedTool == Tool.Eraser) {
+    //       targetSpan.style.background = "none";
+    //       targetSpan.style.outline = `#f6eee3 1px solid`;
+    //       const row = parseInt(targetSpan.dataset.row!);
+    //       const col = parseInt(targetSpan.dataset.col!);
+    //       if (row < 1 || col < 1) return;
+    //       if (row > pixelCount || col > pixelCount) return;
+    //       if (isNaN(row) || isNaN(col)) return;
+    //       const newPixels = [...pixels];
+    //       newPixels[row - 1][col - 1] = "#f6eee3";
+    //       setPixels(newPixels);
+    //       return;
+    //     } else if (selectedTool == Tool.Pencil) {
+    //       if (targetSpan.style.background === color) return;
+    //       targetSpan.style.background = color;
+    //       targetSpan.style.outline = `${color} 1px solid`;
+    //       const row = parseInt(targetSpan.dataset.row!);
+    //       const col = parseInt(targetSpan.dataset.col!);
+    //       if (row < 1 || col < 1) return;
+    //       if (row > pixelCount || col > pixelCount) return;
+    //       if (isNaN(row) || isNaN(col)) return;
+    //       const newPixels = [...pixels];
+    //       newPixels[row - 1][col - 1] = color;
+    //       setPixels(newPixels);
+    //     }
+    //   }
       //drawing horizontal lines
       for (let row = 1; row < pixelCount + 1; row++) {
         for (let col = 1; col < pixelCount + 1; col++) {
@@ -61,22 +67,22 @@ function CanvasArea() {
           span.addEventListener("mouseover", (e) => {
             //check if mouse is pressing right click
             if (e.buttons !== 1) return;
-            paintGrid(e.target as HTMLSpanElement);
+            paintCanvas(row,col);
           });
           span.addEventListener("mousedown", (e) => {
-            paintGrid(e.target as HTMLSpanElement);
+            paintCanvas(row,col);
           });
           fragment.appendChild(span);
         }
       }
       gridDiv.appendChild(fragment);
     }
-  }, [selectedTool,color, pixelCount]);
+  }, [pixelCount]);
   return (
     <div className="bg-[#f6eee3] w-full h-full flex justify-center items-center">
-      <div className=" aspect-square h-[90%] flex justify-stretch items-stretch relative border-solid border-[#d9bda5] border-[10px]">
+      <div className="aspect-square h-[90%] flex justify-stretch items-stretch relative border-solid border-[#d9bda5] border-[10px]">
         <canvas
-          className=" aspect-square h-full pointer-events-none"
+          className=" aspect-square h-full pointer-events-none z-20"
           ref={canvasRef}
           id="canvas"
         ></canvas>

@@ -20,6 +20,10 @@ interface ToolState {
   setPixelCount: (count: number) => void;
 
   gridRef: React.RefObject<HTMLDivElement>; // Reference to the grid
+
+  canvasRef: React.RefObject<HTMLCanvasElement>;
+
+  paintCanvas: (x: number, y: number) => void;
 }
 
 export const useToolStore = create<ToolState>((set, get) => ({
@@ -47,7 +51,10 @@ export const useToolStore = create<ToolState>((set, get) => ({
   },
 
   pixels: new Array(16).fill("").map(() => new Array(16).fill("")), // Default 16x16 pixels
-  setPixels: (pixels) => set(() => ({ pixels })),
+  setPixels: (pixels) => {
+    //set Grid
+    set(() => ({ pixels }));
+  },
   clearPixels: (pixels) =>
     set(() => ({
       pixels: new Array(pixels.length)
@@ -56,4 +63,16 @@ export const useToolStore = create<ToolState>((set, get) => ({
     })),
 
   gridRef: React.createRef<HTMLDivElement>(),
+
+  canvasRef: React.createRef<HTMLCanvasElement>(),
+
+  paintCanvas: (x, y) => {
+    const canvas = get().canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!ctx) return;
+    ctx.fillStyle = get().color;
+    const width = canvas!.width / get().pixelCount;
+    const height = canvas!.height / get().pixelCount;
+    ctx.fillRect((y-1) * height,(x-1) * width,  width, height);
+  },
 }));
