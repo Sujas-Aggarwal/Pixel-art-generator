@@ -1,15 +1,32 @@
+import { useEffect, useState } from "react";
 import CanvasArea from "../components/CanvasArea";
+import LeftToolbar from "../components/LeftToolbar";
+import RightToolbar from "../components/RightToolbar";
+import { Tool } from "../types/Tools";
 
 function Home() {
+  const [pixelCount, setPixelCount] = useState<number>(16);
+  const [selectedTool, setSelectedTool] = useState<Tool>(Tool.Pencil);
+  const [pixels, setPixels] = useState<string[][]>([[]]);
+  const [color, setColor] = useState<string>("#d9bda5");
+  useEffect(() => {
+    setPixels(() => {
+      const newPixels = new Array(pixelCount)
+        .fill("")
+        .map(() => new Array(pixelCount).fill(""));
+      return newPixels;
+    });
+  }, [pixelCount]);
   return (
     <div className="w-full h-screen overflow-hidden bg-white flex justify-stretch items-stretch">
-      <div className="w-[100px] bg-blue-200 flex justify-center items-center">
-        <h1 className="text-center">Main Menu</h1>
-      </div>
-      <CanvasArea />
-      <div className="toolbar bg-blue-200 w-[200px]  flex justify-center items-center">
-        <h1 className="text-center">Toolbar Space</h1>
-      </div>
+      <LeftToolbar />
+      <CanvasArea
+        pixelCount={pixelCount}
+        color={color}
+        pixels={pixels}
+        setPixels={setPixels}
+      />
+      <RightToolbar />
     </div>
   );
 }
