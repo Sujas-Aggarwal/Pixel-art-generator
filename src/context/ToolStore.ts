@@ -24,6 +24,8 @@ interface ToolState {
   canvasRef: React.RefObject<HTMLCanvasElement>;
 
   paintCanvas: (x: number, y: number) => void;
+
+  exportImage: () => void;
 }
 
 export const useToolStore = create<ToolState>((set, get) => ({
@@ -69,10 +71,31 @@ export const useToolStore = create<ToolState>((set, get) => ({
   paintCanvas: (x, y) => {
     const canvas = get().canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!ctx) return;
-    ctx.fillStyle = get().color;
     const width = canvas!.width / get().pixelCount;
     const height = canvas!.height / get().pixelCount;
-    ctx.fillRect((y-1) * height,(x-1) * width,  width, height);
+    const selectedTool = get().selectedTool;
+    if (!ctx) return;
+    console.log(selectedTool);
+    switch (selectedTool) {
+      case Tool.Pencil:
+        ctx.fillStyle = get().color;
+        ctx.fillRect((y - 1) * height, (x - 1) * width, width, height);
+        break;
+      case Tool.Eraser:
+        ctx.clearRect((y - 1) * height, (x - 1) * width, width, height);
+        break;
+    }
+  },
+  exportImage: () => {
+    const canvas = get().canvasRef.current;
+    if (!canvas) return;
+    //resize to pixelSize
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const image = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = image;
+    a.download = "pixel-art.png";
+    a.click();
   },
 }));
