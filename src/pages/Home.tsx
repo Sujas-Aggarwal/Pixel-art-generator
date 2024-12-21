@@ -20,12 +20,7 @@ function Home() {
   return (
     <div className="w-full h-screen overflow-hidden bg-white flex justify-stretch items-stretch">
       <LeftToolbar />
-      <CanvasArea
-        pixelCount={pixelCount}
-        color={color}
-        pixels={pixels}
-        setPixels={setPixels}
-      />
+      <CanvasArea />
       <RightToolbar />
     </div>
   );
