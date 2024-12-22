@@ -26,6 +26,16 @@ interface ToolState {
   paintCanvas: (x: number, y: number) => void;
 
   exportImage: () => void;
+
+  history: string[][][];
+
+  addToHistory: (newPixel: string[][]) => void;
+  undo: () => void;
+  redo: () => void;
+
+  generateCanvas: () => void;
+
+  pencil: (x: number, y: number) => void;
 }
 
 export const useToolStore = create<ToolState>((set, get) => ({
@@ -34,7 +44,6 @@ export const useToolStore = create<ToolState>((set, get) => ({
 
   color: "#000000", // Default paint color
   setColor: (color) => {
-    console.log("Color Change to ", color);
     set(() => ({ color }));
   },
 
@@ -54,7 +63,9 @@ export const useToolStore = create<ToolState>((set, get) => ({
 
   pixels: new Array(16).fill("").map(() => new Array(16).fill("")), // Default 16x16 pixels
   setPixels: (pixels) => {
-    //set Grid
+    console.log(pixels);
+    get().addToHistory(pixels);
+    get().generateCanvas();
     set(() => ({ pixels }));
   },
   clearPixels: (pixels) =>
@@ -70,20 +81,39 @@ export const useToolStore = create<ToolState>((set, get) => ({
 
   paintCanvas: (x, y) => {
     const canvas = get().canvasRef.current;
-    const ctx = canvas?.getContext("2d");
     const width = canvas!.width / get().pixelCount;
     const height = canvas!.height / get().pixelCount;
     const selectedTool = get().selectedTool;
+    let ctx = canvas?.getContext("2d");
     if (!ctx) return;
-    console.log(selectedTool);
-    switch (selectedTool) {
-      case Tool.Pencil:
-        ctx.fillStyle = get().color;
-        ctx.fillRect((y - 1) * height, (x - 1) * width, width, height);
-        break;
-      case Tool.Eraser:
-        ctx.clearRect((y - 1) * height, (x - 1) * width, width, height);
-        break;
+    if (selectedTool == Tool.Pencil) {
+      ctx.fillStyle = get().color;
+      ctx.fillRect((y - 1) * height, (x - 1) * width, width, height);
+    } else if (selectedTool == Tool.Eraser) {
+      ctx.clearRect((y - 1) * height, (x - 1) * width, width, height);
+    }
+    ctx = null;
+  },
+
+  pencil: (x: number, y: number) => {
+    const pixels = get().pixels;
+    const color = get().color;
+    const brushSize = get().brushSize;
+    pixels[x][y] = color;
+    set(() => ({ pixels }));
+  },
+
+  generateCanvas: () => {
+    const canvas = get().canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!ctx || !canvas) return;
+    const pixels = get().pixels;
+    const pixelSize = canvas.width / get().pixelCount;
+    for (let i = 0; i < get().pixelCount; i++) {
+      for (let j = 0; j < get().pixelCount; j++) {
+        ctx.fillStyle = pixels[i][j];
+        ctx.fillRect(j * pixelSize, i * pixelSize, pixelSize, pixelSize);
+      }
     }
   },
   exportImage: () => {
@@ -97,5 +127,27 @@ export const useToolStore = create<ToolState>((set, get) => ({
     a.href = image;
     a.download = "pixel-art.png";
     a.click();
+  },
+
+  history: [[]],
+
+  addToHistory: (newPixel: string[][]) =>
+    set(() => ({ history: [...get().history, newPixel] })),
+
+  undo: () => {
+    const history = get().history;
+    const last = history.pop();
+    if (!last) return;
+    if (last) {
+      set(() => ({ pixels: last }));
+    }
+  },
+
+  redo: () => {
+    const history = get().history;
+    const last = history[history.length - 1];
+    if (last) {
+      set(() => ({ pixels: last }));
+    }
   },
 }));

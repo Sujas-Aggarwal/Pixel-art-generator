@@ -9,6 +9,8 @@ function RightToolbar() {
     setPixelCount,
     selectedTool,
     setSelectedTool,
+    undo,
+    redo,
   } = useToolStore();
   return (
     <div className="toolbar bg-[#d9bda5] w-[200px]  flex justify-center items-center">
@@ -34,6 +36,8 @@ function RightToolbar() {
           <option value={Tool.Pencil}>Pencil</option>
           <option value={Tool.Eraser}>Eraser</option>
         </select>
+        <button onClick={undo}>Undo</button>
+        <button onClick={redo}>Redo</button>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ function CanvasArea() {
     paintCanvas,
     gridRef,
     canvasRef,
+    pencil
   } = useToolStore();
   useEffect(() => {
     const canvas = canvasRef.current;
