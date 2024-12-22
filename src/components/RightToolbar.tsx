@@ -24,6 +24,16 @@ function RightToolbar() {
         redo();
       }
     });
+    return () => {
+      document.removeEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.key === "z") {
+          undo();
+        }
+        if (event.ctrlKey && event.key === "y") {
+          redo();
+        }
+      });
+    };
   }, []);
   return (
     <div className="toolbar bg-[#d9bda5] w-[200px]  flex justify-center items-center">

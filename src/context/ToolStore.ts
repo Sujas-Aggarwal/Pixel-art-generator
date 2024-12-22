@@ -83,8 +83,6 @@ export const useToolStore = create<ToolState>((set, get) => ({
 
   paintCanvas: (x, y) => {
     const canvas = get().canvasRef.current;
-    const width = canvas!.width / get().pixelCount;
-    const height = canvas!.height / get().pixelCount;
     const selectedTool = get().selectedTool;
     let ctx = canvas?.getContext("2d");
     if (!ctx) return;
