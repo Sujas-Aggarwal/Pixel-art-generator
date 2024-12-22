@@ -23,6 +23,10 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      //undeclared variables and functions 
+      'no-undef': 'warn',
+      //unused variables
+      'no-unused-vars': 'warn',
     },
   },
 )
