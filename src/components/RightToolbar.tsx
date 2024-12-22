@@ -14,6 +14,7 @@ function RightToolbar() {
     redo,
     rotateCW,
     rotateCCW,
+    bucketFill,
   } = useToolStore();
   useEffect(() => {
     document.addEventListener("keydown", (event) => {
@@ -58,6 +59,7 @@ function RightToolbar() {
         >
           <option value={Tool.Pencil}>Pencil</option>
           <option value={Tool.Eraser}>Eraser</option>
+          <option value={Tool.BucketFill}>Bucket Fill</option>
         </select>
         <button onClick={undo}>Undo</button>
         <button onClick={redo}>Redo</button>

@@ -39,6 +39,8 @@ interface ToolState {
 
   pencil: (x: number, y: number) => void;
   eraser: (x: number, y: number) => void;
+
+  bucketFill: (x: number, y: number) => void;
 }
 
 export const useToolStore = create<ToolState>((set, get) => ({
@@ -90,6 +92,8 @@ export const useToolStore = create<ToolState>((set, get) => ({
       get().pencil(x, y);
     } else if (selectedTool == Tool.Eraser) {
       get().eraser(x, y);
+    } else if (selectedTool == Tool.BucketFill) {
+      get().bucketFill(x, y);
     }
     ctx = null;
   },
@@ -182,5 +186,22 @@ export const useToolStore = create<ToolState>((set, get) => ({
       row.map((_, j) => pixels[j][pixels.length - i - 1])
     );
     get().setPixels(newPixels, true);
+  },
+
+  bucketFill: (x: number, y: number) => {
+    const pixels = get().pixels;
+    const color = get().color;
+    const oldColor = pixels[x-1][y-1];
+    const fill = (x: number, y: number) => {
+      if (x < 0 || y < 0 || x >= pixels.length || y >= pixels.length) return;
+      if (pixels[x][y] != oldColor) return;
+      pixels[x][y] = color;
+      fill(x + 1, y);
+      fill(x - 1, y);
+      fill(x, y + 1);
+      fill(x, y - 1);
+    };
+    fill(x - 1, y - 1);
+    get().setPixels(pixels, true);
   },
 }));

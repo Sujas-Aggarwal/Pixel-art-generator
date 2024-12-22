@@ -6,6 +6,7 @@ export enum Tool {
   Circle,
   Triangle,
   Fill,
+  BucketFill
 }
 export type ToolType = {
   name: string;
