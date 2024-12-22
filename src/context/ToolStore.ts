@@ -13,7 +13,7 @@ interface ToolState {
   setBrushSize: (size: number) => void;
 
   pixels: string[][]; // Pixel data
-  setPixels: (pixels: string[][]) => void;
+  setPixels: (pixels: string[][], saveHistory?: boolean) => void;
   clearPixels: (pixels: string[][]) => void;
 
   pixelCount: number; // Number of pixels
@@ -32,8 +32,10 @@ interface ToolState {
   addToHistory: (newPixel: string[][]) => void;
   undo: () => void;
   redo: () => void;
+  rotateCW: () => void;
+  rotateCCW: () => void;
 
-  generateCanvas: () => void;
+  generateCanvas: (pixels?: string[][]) => void;
 
   pencil: (x: number, y: number) => void;
   eraser: (x: number, y: number) => void;
@@ -63,10 +65,9 @@ export const useToolStore = create<ToolState>((set, get) => ({
   },
 
   pixels: new Array(16).fill("").map(() => new Array(16).fill("")), // Default 16x16 pixels
-  setPixels: (pixels) => {
-    console.log(pixels);
-    get().addToHistory(pixels);
-    get().generateCanvas();
+  setPixels: (pixels, saveHistory = false) => {
+    if (saveHistory) get().addToHistory(pixels);
+    get().generateCanvas(pixels);
     set(() => ({ pixels }));
   },
   clearPixels: (pixels) =>
@@ -98,28 +99,28 @@ export const useToolStore = create<ToolState>((set, get) => ({
   pencil: (x: number, y: number) => {
     x = x - 1;
     y = y - 1;
-    console.log("pencil");
     const pixels = get().pixels;
     const color = get().color;
     pixels[x][y] = color;
-    get().setPixels(pixels);
+    get().setPixels(pixels, true);
   },
 
   eraser: (x: number, y: number) => {
     x = x - 1;
     y = y - 1;
-    console.log("eraser");
     const pixels = get().pixels;
     pixels[x][y] = "";
-    get().setPixels(pixels);
+    get().setPixels(pixels, true);
   },
 
-  generateCanvas: () => {
+  generateCanvas: (pixels?: string[][]) => {
     const canvas = get().canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!ctx || !canvas) return;
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
-    const pixels = get().pixels;
+    if (!pixels) {
+      pixels = get().pixels;
+    }
     const pixelSize = canvas.width / get().pixelCount;
     for (let i = 0; i < get().pixelCount; i++) {
       for (let j = 0; j < get().pixelCount; j++) {
@@ -144,23 +145,44 @@ export const useToolStore = create<ToolState>((set, get) => ({
 
   history: [new Array(16).fill("").map(() => new Array(16).fill(""))],
 
-  addToHistory: (newPixel: string[][]) =>
-    set(() => ({ history: [...get().history, newPixel] })),
+  addToHistory: (newPixel: string[][]) => {
+    const oldHistory = get().history;
+    const newPixelCopy = newPixel.map((row) => [...row]);
+    const newHistory: string[][][] = [...oldHistory, newPixelCopy];
+    set(() => ({ history: newHistory }));
+  },
 
   undo: () => {
     const history = get().history;
-    const last = history.pop();
-    if (!last) return;
-    if (last) {
-      get().setPixels(last);
+    if (history.length > 1) {
+      const newHistory = history.slice(0, -1);
+      const last = newHistory[newHistory.length - 1];
+      const lastCopy = last.map((row) => [...row]);
+
+      set(() => ({ history: newHistory }));
+      get().setPixels(lastCopy, false);
     }
   },
-
   redo: () => {
     const history = get().history;
     const last = history[history.length - 1];
     if (last) {
-      get().setPixels(last);
+      get().setPixels(last, false);
     }
+  },
+
+  rotateCW: () => {
+    const pixels = get().pixels;
+    const newPixels = pixels.map((row, i) =>
+      row.map((_, j) => pixels[pixels.length - j - 1][i])
+    );
+    get().setPixels(newPixels, true);
+  },
+  rotateCCW: () => {
+    const pixels = get().pixels;
+    const newPixels = pixels.map((row, i) =>
+      row.map((_, j) => pixels[j][pixels.length - i - 1])
+    );
+    get().setPixels(newPixels, true);
   },
 }));

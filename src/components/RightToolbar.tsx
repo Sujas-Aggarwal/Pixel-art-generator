@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useToolStore } from "../context/ToolStore";
 import { Tool } from "../types/Tools";
 
@@ -11,7 +12,19 @@ function RightToolbar() {
     setSelectedTool,
     undo,
     redo,
+    rotateCW,
+    rotateCCW,
   } = useToolStore();
+  useEffect(() => {
+    document.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && event.key === "z") {
+        undo();
+      }
+      if (event.ctrlKey && event.key === "y") {
+        redo();
+      }
+    });
+  }, []);
   return (
     <div className="toolbar bg-[#d9bda5] w-[200px]  flex justify-center items-center">
       <h1 className="text-center">Toolbar Space</h1>
@@ -38,6 +51,8 @@ function RightToolbar() {
         </select>
         <button onClick={undo}>Undo</button>
         <button onClick={redo}>Redo</button>
+        <button onClick={rotateCW}>Rotate CW</button>
+        <button onClick={rotateCCW}>Rotate CCW</button>
       </div>
     </div>
   );
