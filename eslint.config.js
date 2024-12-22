@@ -24,7 +24,14 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       'no-unused-vars': ['warn'], // Warn about unused variables
-      '@typescript-eslint/no-unused-vars': ['warn'], // Warn about unused variables in TypeScript
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all', // Check all variables
+          args: 'after-used', // Warn for unused function arguments
+          ignoreRestSiblings: true, // Ignore rest siblings in destructuring
+        },
+      ],
       '@typescript-eslint/no-unused-vars-experimental': ['off'], // Disable deprecated rule if included
       'no-unused-functions': ['warn'], // Warn about unused functions (if custom rule exists)
     },
