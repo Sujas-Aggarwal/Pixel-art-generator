@@ -36,6 +36,7 @@ interface ToolState {
   generateCanvas: () => void;
 
   pencil: (x: number, y: number) => void;
+  eraser: (x: number, y: number) => void;
 }
 
 export const useToolStore = create<ToolState>((set, get) => ({
@@ -87,30 +88,42 @@ export const useToolStore = create<ToolState>((set, get) => ({
     let ctx = canvas?.getContext("2d");
     if (!ctx) return;
     if (selectedTool == Tool.Pencil) {
-      ctx.fillStyle = get().color;
-      ctx.fillRect((y - 1) * height, (x - 1) * width, width, height);
+      get().pencil(x, y);
     } else if (selectedTool == Tool.Eraser) {
-      ctx.clearRect((y - 1) * height, (x - 1) * width, width, height);
+      get().eraser(x, y);
     }
     ctx = null;
   },
 
   pencil: (x: number, y: number) => {
+    x = x - 1;
+    y = y - 1;
+    console.log("pencil");
     const pixels = get().pixels;
     const color = get().color;
-    const brushSize = get().brushSize;
     pixels[x][y] = color;
-    set(() => ({ pixels }));
+    get().setPixels(pixels);
+  },
+
+  eraser: (x: number, y: number) => {
+    x = x - 1;
+    y = y - 1;
+    console.log("eraser");
+    const pixels = get().pixels;
+    pixels[x][y] = "";
+    get().setPixels(pixels);
   },
 
   generateCanvas: () => {
     const canvas = get().canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!ctx || !canvas) return;
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
     const pixels = get().pixels;
     const pixelSize = canvas.width / get().pixelCount;
     for (let i = 0; i < get().pixelCount; i++) {
       for (let j = 0; j < get().pixelCount; j++) {
+        if (!pixels[i][j] || pixels[i][j] == "") continue;
         ctx.fillStyle = pixels[i][j];
         ctx.fillRect(j * pixelSize, i * pixelSize, pixelSize, pixelSize);
       }
@@ -129,7 +142,7 @@ export const useToolStore = create<ToolState>((set, get) => ({
     a.click();
   },
 
-  history: [[]],
+  history: [new Array(16).fill("").map(() => new Array(16).fill(""))],
 
   addToHistory: (newPixel: string[][]) =>
     set(() => ({ history: [...get().history, newPixel] })),
@@ -139,7 +152,7 @@ export const useToolStore = create<ToolState>((set, get) => ({
     const last = history.pop();
     if (!last) return;
     if (last) {
-      set(() => ({ pixels: last }));
+      get().setPixels(last);
     }
   },
 
@@ -147,7 +160,7 @@ export const useToolStore = create<ToolState>((set, get) => ({
     const history = get().history;
     const last = history[history.length - 1];
     if (last) {
-      set(() => ({ pixels: last }));
+      get().setPixels(last);
     }
   },
 }));
