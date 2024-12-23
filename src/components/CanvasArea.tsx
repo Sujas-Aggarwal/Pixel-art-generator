@@ -51,7 +51,7 @@ function CanvasArea() {
     }
   }, [pixelCount]);
   return (
-    <div className="bg-[#f6eee3] w-full h-full flex justify-center items-center">
+    <div className="bg-[#f6eee3] gap-1 w-full h-full flex justify-center items-center flex-col">
       <div className="aspect-square h-[90%] flex justify-stretch items-stretch relative border-solid border-[#d9bda5] border-[10px]">
         <canvas
           className=" aspect-square h-full pointer-events-none z-20"
@@ -60,9 +60,10 @@ function CanvasArea() {
         ></canvas>
         <div
           ref={gridRef}
-          className="grid-lines  grid absolute w-full h-full top-0 left-0 z-10 "
+          className="grid-lines opacity-20  grid absolute w-full h-full top-0 left-0 z-10 "
         ></div>
       </div>
+      <p>Made with ❤️ by <a className="font-bold hover:underline" href="https://github.com/Sujas-Aggarwal" target="_blank">Sujas Aggarwal</a></p>
     </div>
   );
 }

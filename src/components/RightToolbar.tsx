@@ -75,23 +75,25 @@ function RightToolbar() {
           onChange={(e) => setColor(e.target.value)}
           className="p-0 m-2"
         />
-        <label htmlFor="">Pixel Number</label>
-        <input
-          type="number"
-          className="!w-full"
-          min={8}
-          max={64}
-          value={pixelCount}
-          onChange={(e) => {
-            if (pixels.some((row) => row.some((col) => col !== ""))) {
-              const confirm = window.confirm(
-                "Changing the pixel count will clear the canvas. Are you sure?"
-              );
-              if (!confirm) return;
-            }
-            setPixelCount(parseInt(e.target.value));
-          }}
-        />
+        <div className="flex gap-1 items-center justify-center text-center">
+          <label className="whitespace-nowrap">Pixel Number:</label>
+          <input
+            type="number"
+            className="min-w-[35px] bg-transparent outline-none"
+            min={8}
+            max={64}
+            value={pixelCount}
+            onChange={(e) => {
+              if (pixels.some((row) => row.some((col) => col !== ""))) {
+                const confirm = window.confirm(
+                  "Changing the pixel count will clear the canvas. Are you sure?"
+                );
+                if (!confirm) return;
+              }
+              setPixelCount(parseInt(e.target.value));
+            }}
+          />
+        </div>
         <div className="w-full flex flex-wrap gap-2 p-4 justify-center mx-auto">
           <button
             style={{
