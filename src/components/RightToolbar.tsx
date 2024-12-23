@@ -17,6 +17,7 @@ function RightToolbar() {
     setPixelCount,
     setSelectedTool,
     undo,
+    selectedTool,
     exportImage,
     redo,
     rotateCW,
@@ -43,20 +44,20 @@ function RightToolbar() {
     if (event.ctrlKey && event.key === "s") {
       exportImage();
     }
-    if (event.key === "r") {
+    if (event.key === ";") {
       rotateCW();
     }
-    if (event.key === "l") {
+    if (event.key === "'") {
       rotateCCW();
     }
-    if (event.key === "b") {
-      setSelectedTool(Tool.BucketFill);
-    }
-    if (event.key === "p") {
+    if (event.key === "1") {
       setSelectedTool(Tool.Pencil);
     }
-    if (event.key === "e") {
+    if (event.key === "2") {
       setSelectedTool(Tool.Eraser);
+    }
+    if (event.key === "3") {
+      setSelectedTool(Tool.BucketFill);
     }
   };
   return (
@@ -81,6 +82,9 @@ function RightToolbar() {
         />
         <div className="w-full flex flex-wrap gap-2 justify-center mx-auto">
           <button
+            style={{
+              boxShadow: selectedTool === Tool.Pencil ? "0 0 0 1px #000" : "",
+            }}
             onClick={() => {
               setSelectedTool(Tool.Pencil);
             }}
@@ -88,6 +92,9 @@ function RightToolbar() {
             <img src={pencil} alt="Pencil" title="Pencil" />
           </button>
           <button
+            style={{
+              boxShadow: selectedTool === Tool.Eraser ? "0 0 0 1px #000" : "",
+            }}
             onClick={() => {
               setSelectedTool(Tool.Eraser);
             }}
@@ -95,22 +102,26 @@ function RightToolbar() {
             <img src={eraser} alt="eraser" title="eraser" />
           </button>
           <button
+            style={{
+              boxShadow:
+                selectedTool === Tool.BucketFill ? "0 0 0 1px #000" : "",
+            }}
             onClick={() => {
               setSelectedTool(Tool.BucketFill);
             }}
           >
             <img src={bucket} alt="bucket" title="bucket" />
           </button>
-          <button onClick={undo}>
+          <button className="active:shadow-inner active:shadow-black/30" onClick={undo}>
             <img src={undoImg} alt="undo" title="undo" />
           </button>
-          <button onClick={redo}>
+          <button className="active:shadow-inner active:shadow-black/30" onClick={redo}>
             <img src={redoImg} alt="redo" title="redo" />
           </button>
-          <button onClick={rotateCW}>
+          <button className="active:shadow-inner active:shadow-black/30" onClick={rotateCW}>
             <img src={rotateImg} alt="rotate" title="rotate" />
           </button>
-          <button className="active::bg-black active:scale-125" onClick={rotateCCW}>
+          <button className="active:shadow-inner active:shadow-black/30" onClick={rotateCCW}>
             <img src={antirotateImg} alt="antirotate" title="antirotate" />
           </button>
         </div>
