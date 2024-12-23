@@ -1,0 +1,8 @@
+#toolbar-right input{
+    width: 30px;
+    height: 30px;
+}
+#toolbar-right input::-webkit-inner-spin-button, #toolbar-right input::-webkit-outer-spin-button{
+    -webkit-appearance: none;
+    margin: 0;
+}
