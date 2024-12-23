@@ -4,7 +4,7 @@ import RightToolbar from "../components/RightToolbar";
 
 function Home() {
   return (
-    <div className="w-full h-screen overflow-hidden bg-white flex justify-stretch items-stretch">
+    <div className="w-full h-screen select-none overflow-hidden bg-white flex justify-stretch items-stretch">
       <LeftToolbar />
       <CanvasArea />
       <RightToolbar />

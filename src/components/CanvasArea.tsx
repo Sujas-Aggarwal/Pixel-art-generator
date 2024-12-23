@@ -26,34 +26,6 @@ function CanvasArea() {
       const gridWidth = gridDiv.scrollWidth;
       const gridHeight = gridDiv.scrollHeight;
       const fragment = document.createDocumentFragment();
-    //   function paintGrid(targetSpan: HTMLSpanElement) {
-    //     if (selectedTool == Tool.Eraser) {
-    //       targetSpan.style.background = "none";
-    //       targetSpan.style.outline = `#f6eee3 1px solid`;
-    //       const row = parseInt(targetSpan.dataset.row!);
-    //       const col = parseInt(targetSpan.dataset.col!);
-    //       if (row < 1 || col < 1) return;
-    //       if (row > pixelCount || col > pixelCount) return;
-    //       if (isNaN(row) || isNaN(col)) return;
-    //       const newPixels = [...pixels];
-    //       newPixels[row - 1][col - 1] = "#f6eee3";
-    //       setPixels(newPixels);
-    //       return;
-    //     } else if (selectedTool == Tool.Pencil) {
-    //       if (targetSpan.style.background === color) return;
-    //       targetSpan.style.background = color;
-    //       targetSpan.style.outline = `${color} 1px solid`;
-    //       const row = parseInt(targetSpan.dataset.row!);
-    //       const col = parseInt(targetSpan.dataset.col!);
-    //       if (row < 1 || col < 1) return;
-    //       if (row > pixelCount || col > pixelCount) return;
-    //       if (isNaN(row) || isNaN(col)) return;
-    //       const newPixels = [...pixels];
-    //       newPixels[row - 1][col - 1] = color;
-    //       setPixels(newPixels);
-    //     }
-    //   }
-      //drawing horizontal lines
       for (let row = 1; row < pixelCount + 1; row++) {
         for (let col = 1; col < pixelCount + 1; col++) {
           const span = document.createElement("span");
@@ -88,7 +60,7 @@ function CanvasArea() {
         ></canvas>
         <div
           ref={gridRef}
-          className="grid-lines grid absolute w-full h-full top-0 left-0 z-10 "
+          className="grid-lines  grid absolute w-full h-full top-0 left-0 z-10 "
         ></div>
       </div>
     </div>

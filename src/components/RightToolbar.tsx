@@ -1,6 +1,13 @@
 import { useEffect } from "react";
 import { useToolStore } from "../context/ToolStore";
 import { Tool } from "../types/Tools";
+import pencil from "../assets/icons/pencil.svg";
+import eraser from "../assets/icons/eraser.svg";
+import bucket from "../assets/icons/bucket.svg";
+import undoImg from "../assets/icons/undo.svg";
+import redoImg from "../assets/icons/redo.svg";
+import rotateImg from "../assets/icons/rotate.svg";
+import antirotateImg from "../assets/icons/antirotate.svg";
 import "../css/RightToolbar.css";
 function RightToolbar() {
   const {
@@ -8,9 +15,9 @@ function RightToolbar() {
     setColor,
     pixelCount,
     setPixelCount,
-    selectedTool,
     setSelectedTool,
     undo,
+    exportImage,
     redo,
     rotateCW,
     rotateCCW,
@@ -33,6 +40,9 @@ function RightToolbar() {
     if (event.ctrlKey && event.key === "y") {
       redo();
     }
+    if (event.ctrlKey && event.key === "s") {
+      exportImage();
+    }
     if (event.key === "r") {
       rotateCW();
     }
@@ -50,7 +60,7 @@ function RightToolbar() {
     }
   };
   return (
-    <div className="bg-[#d9bda5] w-[200px]  flex justify-center items-center p-2">
+    <div className="bg-[#d9bda5] w-[200px] select-none  flex justify-center items-center p-2">
       <div
         id="toolbar-right"
         className="flex flex-col justify-center items-center bg-[#e8cbb1] p-2 w-full"
@@ -62,22 +72,48 @@ function RightToolbar() {
           className="p-0"
         />
         <input
-          type="number"
+          type="range"
+          className="!w-full"
+          min={4}
+          max={128}
           value={pixelCount}
-          style={{
-            WebkitAppearance: "none",
-            MozAppearance: "textfield",
-          }}
           onChange={(e) => setPixelCount(parseInt(e.target.value))}
-          className="p-0"
         />
-        <button onClick={()=>{setSelectedTool(Tool.Pencil)}}>Pencil</button>
-        <button onClick={()=>{setSelectedTool(Tool.Eraser)}}>Eraser</button>
-        <button onClick={()=>{setSelectedTool(Tool.BucketFill)}}>BucketFill</button>
-        <button onClick={undo}>Undo</button>
-        <button onClick={redo}>Redo</button>
-        <button onClick={rotateCW}>Rotate CW</button>
-        <button onClick={rotateCCW}>Rotate CCW</button>
+        <div className="w-full flex flex-wrap gap-2 justify-center mx-auto">
+          <button
+            onClick={() => {
+              setSelectedTool(Tool.Pencil);
+            }}
+          >
+            <img src={pencil} alt="Pencil" title="Pencil" />
+          </button>
+          <button
+            onClick={() => {
+              setSelectedTool(Tool.Eraser);
+            }}
+          >
+            <img src={eraser} alt="eraser" title="eraser" />
+          </button>
+          <button
+            onClick={() => {
+              setSelectedTool(Tool.BucketFill);
+            }}
+          >
+            <img src={bucket} alt="bucket" title="bucket" />
+          </button>
+          <button onClick={undo}>
+            <img src={undoImg} alt="undo" title="undo" />
+          </button>
+          <button onClick={redo}>
+            <img src={redoImg} alt="redo" title="redo" />
+          </button>
+          <button onClick={rotateCW}>
+            <img src={rotateImg} alt="rotate" title="rotate" />
+          </button>
+          <button className="active::bg-black active:scale-125" onClick={rotateCCW}>
+            <img src={antirotateImg} alt="antirotate" title="antirotate" />
+          </button>
+        </div>
       </div>
     </div>
   );

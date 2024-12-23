@@ -1,8 +1,10 @@
-#toolbar-right input{
+#toolbar-right input, #toolbar-right button{
     width: 30px;
     height: 30px;
+    overflow: hidden;
 }
-#toolbar-right input::-webkit-inner-spin-button, #toolbar-right input::-webkit-outer-spin-button{
-    -webkit-appearance: none;
-    margin: 0;
+#toolbar-right button{
+    background: #d9bda5;
+    padding: 5px;
+    border-radius: 5px;
 }
