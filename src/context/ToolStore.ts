@@ -73,11 +73,11 @@ export const useToolStore = create<ToolState>((set, get) => ({
     set(() => ({ pixels }));
   },
   clearPixels: (pixels) =>
-    set(() => ({
-      pixels: new Array(pixels.length)
+    get().setPixels(
+      new Array(pixels.length)
         .fill("")
-        .map(() => new Array(pixels.length).fill("")),
-    })),
+        .map(() => new Array(pixels.length).fill(""))
+    ),
 
   gridRef: React.createRef<HTMLDivElement>(),
 
@@ -191,7 +191,7 @@ export const useToolStore = create<ToolState>((set, get) => ({
   bucketFill: (x: number, y: number) => {
     const pixels = get().pixels;
     const color = get().color;
-    const oldColor = pixels[x-1][y-1];
+    const oldColor = pixels[x - 1][y - 1];
     const fill = (x: number, y: number) => {
       if (x < 0 || y < 0 || x >= pixels.length || y >= pixels.length) return;
       if (pixels[x][y] != oldColor) return;
