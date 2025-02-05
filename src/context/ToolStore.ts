@@ -6,6 +6,9 @@ interface ToolState {
   selectedTool: Tool;
   setSelectedTool: (tool: Tool) => void;
 
+  toolVarient: boolean[];
+  setToolVarient: (toolVarient: boolean[] | ((prev: boolean[]) => boolean[]) | null) => void;
+
   color: string; // Current tool's color
   setColor: (color: string) => void;
 
@@ -26,6 +29,7 @@ interface ToolState {
   paintCanvas: (x: number, y: number) => void;
 
   exportImage: () => void;
+  exportVector: () => void;
 
   history: string[][][];
 
@@ -38,6 +42,7 @@ interface ToolState {
   generateCanvas: (pixels?: string[][]) => void;
 
   pencil: (x: number, y: number) => void;
+  symPencil: (x: number, y: number) => void;
   eraser: (x: number, y: number) => void;
 
   bucketFill: (x: number, y: number) => void;
@@ -46,6 +51,15 @@ interface ToolState {
 export const useToolStore = create<ToolState>((set, get) => ({
   selectedTool: Tool.Pencil, // Default tool
   setSelectedTool: (tool) => set(() => ({ selectedTool: tool })),
+
+  toolVarient: [], // Default tool
+  setToolVarient: (toolVarient) => {
+    if (typeof toolVarient === 'function') {
+      set((state) => ({ toolVarient: toolVarient(state.toolVarient) }));
+    } else {
+      set(() => ({ toolVarient: toolVarient || [] }));
+    }
+  },
 
   color: "#000000", // Default paint color
   setColor: (color) => {
@@ -92,7 +106,10 @@ export const useToolStore = create<ToolState>((set, get) => ({
       get().pencil(x, y);
     } else if (selectedTool == Tool.Eraser) {
       get().eraser(x, y);
-    } else if (selectedTool == Tool.BucketFill) {
+    } else if (selectedTool == Tool.SymPencil) {
+      get().symPencil(x, y);
+    } 
+    else if (selectedTool == Tool.BucketFill) {
       get().bucketFill(x, y);
     }
     ctx = null;
@@ -104,6 +121,20 @@ export const useToolStore = create<ToolState>((set, get) => ({
     const pixels = get().pixels;
     const color = get().color;
     pixels[x][y] = color;
+    get().setPixels(pixels, true);
+  },
+
+  symPencil: (x: number, y: number) => {
+    x = x - 1;
+    y = y - 1;
+    const length = get().pixelCount;
+    const pixels = get().pixels;
+    const color = get().color;
+    const varient = get().toolVarient;
+    if (varient[0]) pixels[x][y] = color;
+    if (varient[1]) pixels[length - x - 1][y] = color;
+    if (varient[2]) pixels[x][length - y - 1] = color;
+    if (varient[3]) pixels[length - x - 1][length - y - 1] = color;
     get().setPixels(pixels, true);
   },
 
@@ -142,6 +173,34 @@ export const useToolStore = create<ToolState>((set, get) => ({
     const a = document.createElement("a");
     a.href = image;
     a.download = "pixel-art.png";
+    a.click();
+  },
+
+
+  exportVector: () => {
+    const canvas = get().canvasRef.current;
+    if (!canvas) return;
+    const width = canvas.width;
+    const height = canvas.height;
+    const pixelSize = width / get().pixelCount;
+    const pixels = get().pixels;
+    const a = document.createElement("a");
+
+    // Create SVG content -----------------------------------------------------------------------------------------------------------------------
+    let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">`;
+    for (let i = 0; i < get().pixelCount; i++) {
+        for (let j = 0; j < get().pixelCount; j++) {
+            if (!pixels[i][j] || pixels[i][j] == "") continue;
+            const color = pixels[i][j];
+            svgContent += `<rect x="${j * pixelSize}" y="${i * pixelSize}" width="${pixelSize}" height="${pixelSize}" fill="${color}" />`;
+        }
+    }
+    svgContent += "</svg>"; 
+    // ------------------------------------------------------------------------------------------------------------------------------------------
+
+    const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+    a.href = URL.createObjectURL(svgBlob);
+    a.download = "pixel-art.svg";
     a.click();
   },
 
