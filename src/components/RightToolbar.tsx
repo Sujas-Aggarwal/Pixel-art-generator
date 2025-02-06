@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useToolStore } from "../context/ToolStore";
 import { Tool } from "../types/Tools";
 import pencil from "../assets/icons/pencil.svg";
+import symPencil from "../assets/icons/sympencil.svg";
 import eraser from "../assets/icons/eraser.svg";
 import bucket from "../assets/icons/bucket.svg";
 import undoImg from "../assets/icons/undo.svg";
@@ -9,6 +10,8 @@ import redoImg from "../assets/icons/redo.svg";
 import rotateImg from "../assets/icons/rotate.svg";
 import antirotateImg from "../assets/icons/antirotate.svg";
 import reset from "../assets/icons/refresh.svg";
+import { tools } from "../types/Tools";
+
 import "../css/RightToolbar.css";
 function RightToolbar() {
   const {
@@ -18,6 +21,8 @@ function RightToolbar() {
     setPixelCount,
     pixels,
     setSelectedTool,
+    toolVarient,
+    setToolVarient,
     undo,
     selectedTool,
     exportImage,
@@ -26,6 +31,9 @@ function RightToolbar() {
     rotateCW,
     rotateCCW,
   } = useToolStore();
+  useEffect(() => {
+    setToolVarient((x: boolean[]) => new Array(tools[selectedTool].variant?.length).fill(false));
+  }, [selectedTool]);
   useEffect(() => {
     document.addEventListener("keydown", keyboardShortcuts);
     return () => {
@@ -64,7 +72,7 @@ function RightToolbar() {
     }
   };
   return (
-    <div className="bg-[#d9bda5] w-[200px] select-none  flex justify-center items-center p-2">
+    <div className="bg-[#d9bda5] w-[200px] select-none  flex flex-col justify-center items-center p-2">
       <div
         id="toolbar-right"
         className="flex flex-col justify-center items-center bg-[#e8cbb1] p-2 w-full"
@@ -105,6 +113,17 @@ function RightToolbar() {
           >
             <img src={pencil} alt="Pencil" title="Pencil" />
           </button>
+          <button
+            style={{
+              boxShadow: selectedTool === Tool.SymPencil ? "0 0 0 1px #000" : "",
+            }}
+            onClick={() => {
+              setSelectedTool(Tool.SymPencil);
+            }}
+          >
+            <img src={symPencil} alt="Pencil" title="Pencil" />
+          </button>
+
           <button
             style={{
               boxShadow: selectedTool === Tool.Eraser ? "0 0 0 1px #000" : "",
@@ -159,6 +178,23 @@ function RightToolbar() {
             <img src={reset} alt="reset" title="reset" />
           </button>
         </div>
+      </div>
+      <hr/>      <hr/>
+      <div id = "toolbar-right" className="flex flex-col flex-wrap gap-1 justify-center items-center bg-[#e8cbb1] p-2 w-full ">
+        {Tool[selectedTool]} :
+        <div className="flex flex-row flex-wrap gap-1 justify-center items-center bg-[#e8cbb1] p-2 w-full ">
+        {tools[selectedTool].variant?.map((variant, index) =>           
+        <button key={index}
+        style={{
+          boxShadow: toolVarient[index] ? "0 0 0 1px #000" : "",
+        }}
+        onClick={() => {
+          setToolVarient((x: boolean[]) => [...x.slice(0, index), !x[index], ...x.slice(index + 1)]);
+        }}
+      >
+        <img src={"/assets/icons/"+variant.value+ ".svg"} alt= {variant.name} title={variant.name} />
+    </button>
+        )}</div>
       </div>
     </div>
   );
