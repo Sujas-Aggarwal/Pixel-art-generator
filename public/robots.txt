@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pixel-art-generator.pages.dev/sitemap.xml
